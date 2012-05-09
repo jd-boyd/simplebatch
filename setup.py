@@ -8,5 +8,5 @@ setup(name='pbatch',
       author='Joshua D. Boyd',
       author_email='jdboyd@jdboyd.net',
       packages = find_packages(),
-      entry_points = {'console_scripts': ['prun = pbatch.tools.sun:run']}
+      entry_points = {'console_scripts': ['prun = pbatch.tools.sub:run']}
      )
