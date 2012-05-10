@@ -4,12 +4,6 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy import ForeignKey, ColumnDefault
 
-
-#engine = create_engine('sqlite:///jobs.db', echo=True)
-#metadata = MetaData()
-#metadata.bind = engine
-#Session = sessionmaker(bind=engine)
-
 Base = declarative_base()
 
 class Job(Base):
