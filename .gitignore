@@ -1,6 +1,8 @@
 *.py[co]
 *~
 
+\#*\#
+.*
 # Packages
 *.egg
 *.egg-info
@@ -26,3 +28,5 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+
+*.db
