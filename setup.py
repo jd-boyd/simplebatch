@@ -8,5 +8,11 @@ setup(name='pbatch',
       author='Joshua D. Boyd',
       author_email='jdboyd@jdboyd.net',
       packages = find_packages(),
-      entry_points = {'console_scripts': ['prun = pbatch.tools.sub:run']}
+      entry_points = {'console_scripts': ['prun = pbatch.tools.sub:run',
+                                          'psubmit = pbatch.tools.sub:submit',
+                                          'pkill = pbatch.tools.status:kill',
+                                          'pstatus = pbatch.tools.status:status',
+                                          'pbatch = pbatch.daemons.server:start',                                         
+                                          'pbatch_worker = pbatch.daemons.worker:start',                                         
+                                          ]}
      )

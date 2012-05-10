@@ -14,6 +14,13 @@ pstatus
 
 pkill
 
+Daemons
+=======
+
+pbatch
+
+pbatch_worker
+
 TODO
 ====
 
