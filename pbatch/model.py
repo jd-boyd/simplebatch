@@ -1,9 +1,14 @@
 import sqlalchemy
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String
 
-engine = create_engine('sqlite:///jobs.db:', echo=True)
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import ForeignKey, ColumnDefault
+
+
+#engine = create_engine('sqlite:///jobs.db', echo=True)
+#metadata = MetaData()
+#metadata.bind = engine
+#Session = sessionmaker(bind=engine)
 
 Base = declarative_base()
 
@@ -14,12 +19,18 @@ class Job(Base):
     uid = Column(Integer)
     gid = Column(Integer)
     user = Column(String)
-    user = Column(String)
     cli = Column(String)
     env = Column(String)
     stdin = Column(String)
     stdout = Column(String)
     stderr = Column(String)
+
+    type = Column(String)
+
+    __mapper_args__ = {
+        'polymorphic_identity':'jobs',
+        'polymorphic_on':type
+    }
 
     def __init__(self, name, fullname, password):
         #self.name = name
@@ -27,22 +38,44 @@ class Job(Base):
         #self.password = password
         pass
         
-    def __repr__(self):
-        #return "<Job('%s','%s', '%s')>" % (self.name, self.fullname, self.password)
-        return "<Job()>"
+    #def __repr__(self):
+    #    #return "<Job('%s','%s', '%s')>" % (self.name, self.fullname, self.password)
+    #    return "<Job()>"
 
 
-class Pending(Job):
+class PendingJob(Job):
     __tablename__ = 'pending_jobs';
-    pass
+    
+    job_id = Column(Integer, ForeignKey('jobs.job_id'), primary_key=True)
 
-class Running(Job):
+    __mapper_args__ = {
+        'polymorphic_identity':'pending_jobs',
+    }
+
+
+class RunningJob(Job):
     __tablename__ = 'running_jobs';
-    #starting_time
-    pass
+    start_time = Column(DateTime)
+   
+    job_id = Column(Integer, ForeignKey('jobs.job_id'), primary_key=True)
+    
+    __mapper_args__ = {
+        'polymorphic_identity':'running_jobs',
+    }
 
-class Complete(Job):
+
+class CompletedJob(Job):
     __tablename__ = 'completed_jobs';
-    #starting_time
-    #ending time
+    start_time = Column(DateTime)
+    end_time = Column(DateTime)
     return_code = Column(Integer)
+
+    job_id = Column(Integer, ForeignKey('jobs.job_id'), primary_key=True)
+
+    __mapper_args__ = {
+        'polymorphic_identity':'completed_jobs',
+    }
+
+def init(engine):
+    Base.metadata.create_all(engine)
+
