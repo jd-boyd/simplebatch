@@ -12,6 +12,8 @@ prun
 
 pstatus
 
+pkill
+
 TODO
 ====
 
