@@ -3,6 +3,18 @@ pbatch
 
 Simple Batch Processing
 
+Daemons
+=======
+
+pbatch
+------
+
+JSON-RPC server keeps track of jobs.
+
+pbatch_worker
+-------------
+
+
 Tools
 =====
 
@@ -14,12 +26,6 @@ pstatus
 
 pkill
 
-Daemons
-=======
-
-pbatch
-
-pbatch_worker
 
 TODO
 ====

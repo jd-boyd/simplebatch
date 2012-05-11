@@ -5,9 +5,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import MetaData
 
-
 from pbatch.model import PendingJob, init
-
 
 engine = create_engine('sqlite:///jobs.db', echo=True)
 metadata = MetaData()

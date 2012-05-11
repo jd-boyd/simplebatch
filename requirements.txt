@@ -1,2 +1,3 @@
 sqlalchemy
 argparse
+jsonrpc2
