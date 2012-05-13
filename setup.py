@@ -12,7 +12,7 @@ setup(name='pbatch',
                                           'psubmit = pbatch.tools.sub:submit',
                                           'pkill = pbatch.tools.status:kill',
                                           'pstatus = pbatch.tools.status:status',
-                                          'pbatch = pbatch.daemons.server:start',                                         
+                                          'pbatchd = pbatch.daemons.server:start',                                         
                                           'pbatch_worker = pbatch.daemons.worker:start',                                         
                                           ]}
      )
