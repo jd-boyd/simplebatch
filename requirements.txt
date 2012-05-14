@@ -1,6 +1,6 @@
 sqlalchemy
 argparse
-web.py
 WebOb
+routes
 webtest
 pystache
