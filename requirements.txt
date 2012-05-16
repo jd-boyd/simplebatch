@@ -4,3 +4,4 @@ WebOb
 routes
 webtest
 pystache
+nose
