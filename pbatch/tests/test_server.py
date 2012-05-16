@@ -38,11 +38,20 @@ def test_json_post():
     req.body = '"A"'
     yield test, test_method2, [{}, req], "A"
 
-def test_new_job():
-    app = TestApp(server.dispatcher)
-    res = app.post_json("/jobs/", {"cli": "ls -l"}, status=200)
-    eq(res.json, {"job_id": 1234}) 
+class TestClass(object):
+    def setUp(self):
+        import sys
+        sys.stderr.write("Setup")
+        server.session = server.pbatch.model.connect("sqlite://")
 
-def test_get_job():
-    app = TestApp(server.dispatcher)
-    res = app.get("/jobs/1234", status=200)
+    def tearDown(self):
+        server.session = None
+
+    def test_new_job(self):
+        app = TestApp(server.dispatcher)
+        res = app.post_json("/jobs/", {"cli": "ls -l", 'env': ''}, status=200)
+        eq(res.json, {"job_id": 1234}) 
+
+    def test_get_job(self):
+        app = TestApp(server.dispatcher)
+        res = app.get("/jobs/1234", status=200)

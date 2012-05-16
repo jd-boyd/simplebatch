@@ -7,7 +7,7 @@ from sqlalchemy import MetaData
 
 from pbatch.model import PendingJob, init
 
-engine = create_engine('sqlite:///jobs.db', echo=True)
+engine = create_engine('sqlite://', echo=True)
 metadata = MetaData()
 metadata.bind = engine
 Session = sessionmaker(bind=engine)
@@ -18,7 +18,7 @@ session = Session()
 q = session.query(PendingJob)
 print q
 
-pj = PendingJob("bob", "Bob Fullname", "")
+pj = PendingJob()
 pj.env = json.dumps(dict(os.environ))
 
 session.add(pj)

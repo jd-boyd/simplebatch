@@ -17,7 +17,8 @@ class Job(Base):
     uid = Column(Integer)
     gid = Column(Integer)
     user = Column(String)
-    cli = Column(String)
+    command = Column(String)
+    args = Column(String)
     env = Column(String)
     stdin = Column(String)
     stdout = Column(String)
@@ -29,27 +30,19 @@ class Job(Base):
         'polymorphic_identity':'jobs',
         'polymorphic_on':type
     }
-
-    def __init__(self, name, fullname, password):
-        #self.name = name
-        #self.fullname = fullname
-        #self.password = password
-        pass
-        
+      
     #def __repr__(self):
     #    #return "<Job('%s','%s', '%s')>" % (self.name, self.fullname, self.password)
     #    return "<Job()>"
 
-
 class PendingJob(Job):
     __tablename__ = 'pending_jobs';
-    
+    __table_args__ = {'sqlite_autoincrement': True}
     job_id = Column(Integer, ForeignKey('jobs.job_id'), primary_key=True)
 
     __mapper_args__ = {
         'polymorphic_identity':'pending_jobs',
     }
-
 
 class RunningJob(Job):
     __tablename__ = 'running_jobs';
@@ -77,8 +70,10 @@ class CompletedJob(Job):
 def init(engine):
     Base.metadata.create_all(engine)
 
-def connect():
-    engine = create_engine('sqlite:///jobs.db', echo=True)
+def connect(db_str = 'sqlite:///jobs.db'):
+    import sys
+    sys.stderr.write("Connect: %s\n" % db_str)
+    engine = create_engine(db_str, echo=True)
     metadata = MetaData()
     metadata.bind = engine
     Session = sessionmaker(bind=engine)

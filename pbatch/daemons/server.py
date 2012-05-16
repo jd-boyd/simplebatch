@@ -8,8 +8,6 @@ import routes
 
 import pbatch.model
 
-session  = pbatch.model.connect()
-
 class Dispatcher(object):
     def __init__(self):
         self.map = routes.Mapper()        
@@ -75,7 +73,13 @@ class Jobs(object):
     @json_post
     def new_job(self, req, data):
         job_data = json.loads(req.body)
-        print repr(job_data)
+
+        pj = pbatch.model.PendingJob() 
+        pj.env = json.dumps(job_data['env'])
+
+        session.add(pj)
+        session.commit()
+
         return {"job_id": 1234}
 
     def next_job(self, req):
@@ -89,7 +93,10 @@ class Jobs(object):
 
 Jobs.map(dispatcher.map)
 
+session = None
+
 def start_wsgiref():
+    session = pbatch.model.connect()
     print "PB server."
     from wsgiref.util import setup_testing_defaults
     from wsgiref.simple_server import make_server
