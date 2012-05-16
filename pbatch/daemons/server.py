@@ -39,9 +39,11 @@ dispatcher = Dispatcher()
 
 def json_post(method):
     def wrap(*args, **kwargs):
+        # idx is the position of the data
         idx = 0
         if not isinstance(args[0], webob.Request):
             idx = 1
+
         json_data = json.loads(args[idx].body)
         args = args + (json_data,)
         return method(*args)
