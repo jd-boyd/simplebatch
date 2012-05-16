@@ -4,6 +4,10 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy import ForeignKey, ColumnDefault
 
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import MetaData
+
 Base = declarative_base()
 
 class Job(Base):
@@ -73,3 +77,13 @@ class CompletedJob(Job):
 def init(engine):
     Base.metadata.create_all(engine)
 
+def connect():
+    engine = create_engine('sqlite:///jobs.db', echo=True)
+    metadata = MetaData()
+    metadata.bind = engine
+    Session = sessionmaker(bind=engine)
+    
+    init(engine)
+
+    session = Session()
+    return session
