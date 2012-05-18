@@ -36,7 +36,14 @@ class Job(Base):
         return getattr(self, k)
 
     def toDict(self):
-        return {k: self[k] for k in self.__table__.c.keys()}
+        d = {k: self[k] for k in self.__table__.c.keys()}
+
+        if d['start_time'] is not None:
+            d['start_time'] =  d['start_time'].strftime("%Y%m%dT%H%M%S")
+        if d['end_time'] is not None:
+            d['end_time'] =  d['end_time'].strftime("%Y%m%dT%H%M%S")
+
+        return d
 
     __mapper_args__ = {
         'polymorphic_identity':'jobs',

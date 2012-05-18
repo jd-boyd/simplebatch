@@ -1,4 +1,5 @@
 import json
+import re
 
 import webob
 from webtest import TestApp
@@ -74,6 +75,7 @@ class TestClass(object):
     def test_run_job_not_found(self):
         app = TestApp(server.dispatcher)
         res = app.post_json("/jobs/1234/run", {}, status=404)
+
     def test_run_job(self):
         app = TestApp(server.dispatcher)
 
@@ -85,4 +87,4 @@ class TestClass(object):
         res = app.get("/jobs/1", status=200)
         eq(res.json['job_id'], 1)
         eq(res.json['status'], "running")
-        #eq(res.json['start_time'], "running")
+        assert re.match("^[1-9][0-9][0-9][0-9][0-1][0-9][0-3][0-9]T[0-9][0-9][0-9][0-9][0-9][0-9]$", res.json['start_time']), res.json['start_time']

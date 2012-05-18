@@ -107,7 +107,7 @@ class Jobs(object):
             raise webob.exc.HTTPNotFound()
 
         job.status="running"
-        #job.start_time = datetime.datetime.now()
+        job.start_time = datetime.datetime.now()
         session.commit()
 
         raise webob.exc.HTTPTemporaryRedirect(location='/job/'+str(job_id))
