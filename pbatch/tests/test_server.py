@@ -50,11 +50,12 @@ class TestClass(object):
     def test_new_job(self):
         app = TestApp(server.dispatcher)
         res = app.post_json("/jobs/", {"cli": "ls -l", 'env': ''}, status=200)
-        eq(res.json, {"job_id": 1}) 
+        eq(res.json['job_id'], 1)
+        eq(res.json['status'], "pending")
 
         res = app.post_json("/jobs/", {"cli": "df", 'env': ''}, status=200)
-        eq(res.json, {"job_id": 2}) 
-
+        eq(res.json['job_id'], 2)
+        eq(res.json['status'], "pending")
 
     def test_get_job(self):
         app = TestApp(server.dispatcher)

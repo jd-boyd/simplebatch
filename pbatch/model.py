@@ -32,12 +32,14 @@ class Job(Base):
     end_time = Column(DateTime) # set when complete
     return_code = Column(Integer) # set when complete
 
+    def __getitem__(self, k):
+        return getattr(self, k)
 
-    type = Column(String)
+    def toDict(self):
+        return {k: self[k] for k in self.__table__.c.keys()}
 
     __mapper_args__ = {
         'polymorphic_identity':'jobs',
-        'polymorphic_on':type
     }
 
 def init(engine):

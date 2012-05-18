@@ -88,7 +88,7 @@ class Jobs(object):
         ret = session.add(pj)
         session.commit()
 
-        return {"job_id": pj.job_id}
+        return pj.toDict()
 
     def next_job(self, req):
         return "NEXT JOB"
