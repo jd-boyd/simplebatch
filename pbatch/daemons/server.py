@@ -1,6 +1,7 @@
 import argparse
 import json
 import os
+import datetime
 
 import webob
 from webob.dec import wsgify
@@ -64,14 +65,13 @@ class Jobs(object):
             m.connect('/next', method='next_job')
             m.connect('/{job_id}/run', method='run_job')
             m.connect('/{job_id}/complete}', method='complete_job')
-            m.connect('/{job_id}', method='get_job', conditions={"method": ["GET"]})
+            m.connect('/{job_id}', method='get_job', 
+                      conditions={"method": ["GET"]})
             m.connect('/', method='new_job', conditions={"method": ["POST"]})
 
     @json_return
     def get_job(self, req, job_id):
-        print "GJ:", repr(job_id)
         job = session.query(pbatch.model.Job).get(job_id)
-        print "J:", repr(job)
         if job is None:
             raise webob.exc.HTTPNotFound()
 
@@ -99,8 +99,19 @@ class Jobs(object):
     def next_job(self, req):
         return "NEXT JOB"
 
-    def run_job(self, req, **kwargs):
-        return "RUN JOB:" + repr(kwargs)
+    def run_job(self, req, job_id):
+        print  "RUN JOB:", repr(job_id)
+
+        job = session.query(pbatch.model.Job).get(job_id)
+        if job is None:
+            raise webob.exc.HTTPNotFound()
+
+        job.status="running"
+        #job.start_time = datetime.datetime.now()
+        session.commit()
+
+        raise webob.exc.HTTPTemporaryRedirect(location='/job/'+str(job_id))
+        
 
     def complete_job(self, req, **kwargs):
         return "COMP JOB"

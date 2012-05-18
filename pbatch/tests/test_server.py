@@ -59,7 +59,6 @@ class TestClass(object):
 
     def test_get_job(self):
         app = TestApp(server.dispatcher)
-        res = app.get("/jobs/1234", status=404)
 
         res = app.post_json("/jobs/", {"cli": "ls -l", 'env': ''}, status=200)
         job_id = res.json['job_id']
@@ -67,3 +66,23 @@ class TestClass(object):
         res = app.get("/jobs/1", status=200)
         eq(res.json['job_id'], 1)
         eq(res.json['status'], "pending")
+
+    def test_get_job(self):
+        app = TestApp(server.dispatcher)
+        res = app.get("/jobs/1234", status=404)
+
+    def test_run_job_not_found(self):
+        app = TestApp(server.dispatcher)
+        res = app.post_json("/jobs/1234/run", {}, status=404)
+    def test_run_job(self):
+        app = TestApp(server.dispatcher)
+
+        res = app.post_json("/jobs/", {"cli": "ls -l", 'env': ''}, status=200)
+        job_id = res.json['job_id']
+
+        res = app.post_json("/jobs/1/run", {}, status=307)
+
+        res = app.get("/jobs/1", status=200)
+        eq(res.json['job_id'], 1)
+        eq(res.json['status'], "running")
+        #eq(res.json['start_time'], "running")
