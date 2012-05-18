@@ -62,33 +62,39 @@ class Jobs(object):
         print "S:", repr(cls), dir(cls)
         with map.submapper(controller=cls, path_prefix="/jobs") as m:
             m.connect('/next', method='next_job')
-            m.connect('/run/{item}', method='run_job')
-            m.connect('/complete/{item}', method='complete_job')
+            m.connect('/{job_id}/run', method='run_job')
+            m.connect('/{job_id}/complete}', method='complete_job')
             m.connect('/{job_id}', method='get_job', conditions={"method": ["GET"]})
             m.connect('/', method='new_job', conditions={"method": ["POST"]})
 
+    @json_return
     def get_job(self, req, job_id):
-        #query = session.Query()
-        pass
+        print "GJ:", repr(job_id)
+        job = session.query(pbatch.model.Job).get(job_id)
+        print "J:", repr(job)
+        if job is None:
+            raise webob.exc.HTTPNotFound()
+
+        return job.toDict()        
         
     @json_post
     def new_job(self, req, data):
         job_data = json.loads(req.body)
 
-        pj = pbatch.model.Job() 
-        pj.status = "pending"
+        job = pbatch.model.Job() 
+        job.status = "pending"
         
         keys = ["uid", "gid", "user", "command", "args", "env",
                 "stdin", "stdout", "stderr"]
 
         for k in keys:
             if k in job_data:
-                setattr(pj, k, job_data[k])
+                setattr(job, k, job_data[k])
 
-        ret = session.add(pj)
+        ret = session.add(job)
         session.commit()
 
-        return pj.toDict()
+        return job.toDict()
 
     def next_job(self, req):
         return "NEXT JOB"

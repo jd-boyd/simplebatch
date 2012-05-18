@@ -59,4 +59,11 @@ class TestClass(object):
 
     def test_get_job(self):
         app = TestApp(server.dispatcher)
-        res = app.get("/jobs/1234", status=200)
+        res = app.get("/jobs/1234", status=404)
+
+        res = app.post_json("/jobs/", {"cli": "ls -l", 'env': ''}, status=200)
+        job_id = res.json['job_id']
+
+        res = app.get("/jobs/1", status=200)
+        eq(res.json['job_id'], 1)
+        eq(res.json['status'], "pending")
