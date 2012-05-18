@@ -50,7 +50,11 @@ class TestClass(object):
     def test_new_job(self):
         app = TestApp(server.dispatcher)
         res = app.post_json("/jobs/", {"cli": "ls -l", 'env': ''}, status=200)
-        eq(res.json, {"job_id": 1234}) 
+        eq(res.json, {"job_id": 1}) 
+
+        res = app.post_json("/jobs/", {"cli": "df", 'env': ''}, status=200)
+        eq(res.json, {"job_id": 2}) 
+
 
     def test_get_job(self):
         app = TestApp(server.dispatcher)

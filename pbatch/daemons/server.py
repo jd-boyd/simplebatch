@@ -68,19 +68,27 @@ class Jobs(object):
             m.connect('/', method='new_job', conditions={"method": ["POST"]})
 
     def get_job(self, req, job_id):
-        return "GET JOB"
-
+        #query = session.Query()
+        pass
+        
     @json_post
     def new_job(self, req, data):
         job_data = json.loads(req.body)
 
-        pj = pbatch.model.PendingJob() 
-        pj.env = json.dumps(job_data['env'])
+        pj = pbatch.model.Job() 
+        pj.status = "pending"
+        
+        keys = ["uid", "gid", "user", "command", "args", "env",
+                "stdin", "stdout", "stderr"]
 
-        session.add(pj)
+        for k in keys:
+            if k in job_data:
+                setattr(pj, k, job_data[k])
+
+        ret = session.add(pj)
         session.commit()
 
-        return {"job_id": 1234}
+        return {"job_id": pj.job_id}
 
     def next_job(self, req):
         return "NEXT JOB"
