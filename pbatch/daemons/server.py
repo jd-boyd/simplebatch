@@ -59,8 +59,9 @@ class Jobs(object):
         if job is None:
             raise webob.exc.HTTPNotFound()
 
-        #TODO: be sure status is pending.  If not return 403, with json error
-
+        if not job.status == "pending":
+            raise webob.exc.HTTPForbidden("Can only run pending jobs.")
+        
         job.status="running"
         job.start_time = datetime.datetime.now()
         session.commit()
@@ -73,7 +74,8 @@ class Jobs(object):
         if job is None:
             raise webob.exc.HTTPNotFound()
 
-        #TODO: be sure status is running.  If not return 403, with json error
+        if not job.status == "running":
+            raise webob.exc.HTTPForbidden("Can only complete runnings jobs.")
 
         job.status="complete"
         job.end_time = datetime.datetime.now()

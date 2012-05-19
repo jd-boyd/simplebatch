@@ -58,6 +58,17 @@ class TestClass(object):
         eq(res.json['status'], "running")
         assert re.match("^[1-9][0-9][0-9][0-9][0-1][0-9][0-3][0-9]T[0-9][0-9][0-9][0-9][0-9][0-9]$", res.json['start_time']), res.json['start_time']
 
+    def test_run_job_not_pending(self):
+        app = TestApp(server.dispatcher)
+
+        res = app.post_json("/jobs/", {"cli": "ls -l", 'env': ''}, status=200)
+        job_id = res.json['job_id']
+
+        res = app.post_json("/jobs/1/run", {}, status=307)
+
+        res = app.post_json("/jobs/1/run", {}, status=403)
+
+
     def test_complete_job_not_found(self):
         app = TestApp(server.dispatcher)
         res = app.post_json("/jobs/1234/complete", {"return_code": 4040}, status=404)
@@ -80,11 +91,9 @@ class TestClass(object):
         assert res.json['end_time'] >= res.json['start_time']
 
     def test_complete_job_without_running(self):
-        raise SkipTest()
         app = TestApp(server.dispatcher)
 
         res = app.post_json("/jobs/", {"cli": "ls -l", 'env': ''}, status=200)
         job_id = res.json['job_id']
 
-        res = app.post_json("/jobs/1/complete", {"return_code": 42}, status=307)
-        assert False
+        res = app.post_json("/jobs/1/complete", {"return_code": 42}, status=403)
