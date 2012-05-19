@@ -15,7 +15,7 @@ class Job(Base):
 
     job_id = Column(Integer, primary_key=True)
 
-    status = Column(Enum("pending", "running", "complete"))
+    status = Column(Enum("pending", "running", "complete", "killed"))
 
     uid = Column(Integer)
     gid = Column(Integer)

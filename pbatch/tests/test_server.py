@@ -97,3 +97,25 @@ class TestClass(object):
         job_id = res.json['job_id']
 
         res = app.post_json("/jobs/1/complete", {"return_code": 42}, status=403)
+
+    def test_next_job_basic(self):
+        app = TestApp(server.dispatcher)
+
+        res = app.post_json("/jobs/", {"cli": "ls -l", 'env': ''}, status=200)
+        job_id = res.json['job_id']
+
+        res = app.get("/jobs/next", {}, status=307)
+        eq(res.headers['location'], 'http://localhost/job/1')
+
+    def test_next_job_fail_no_jobs(self):
+        app = TestApp(server.dispatcher)
+
+        res = app.get("/jobs/next", {}, status=404)
+
+    def test_next_job_fail_no_pending_jobs(self):
+        app = TestApp(server.dispatcher)
+        res = app.post_json("/jobs/", {"cli": "ls -l", 'env': ''}, status=200)
+        res = app.post_json("/jobs/1/run", {}, status=307)
+        res = app.get("/jobs/next", {}, status=404)
+
+        

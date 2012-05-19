@@ -8,6 +8,7 @@ from webob.dec import wsgify
 import routes
 
 import pbatch.model
+from pbatch.model import Job
 from pbatch.daemons.wsgi_util import Dispatcher, json_post, json_return
 
 dispatcher = Dispatcher()
@@ -26,7 +27,7 @@ class Jobs(object):
 
     @json_return
     def get_job(self, req, job_id):
-        job = session.query(pbatch.model.Job).get(job_id)
+        job = session.query(Job).get(job_id)
         if job is None:
             raise webob.exc.HTTPNotFound()
 
@@ -36,7 +37,7 @@ class Jobs(object):
     def new_job(self, req, post_data):
         job_data = post_data
 
-        job = pbatch.model.Job() 
+        job = Job() 
         job.status = "pending"
         
         keys = ["uid", "gid", "user", "command", "args", "env",
@@ -52,10 +53,16 @@ class Jobs(object):
         return job.toDict()
 
     def next_job(self, req):
-        return "NEXT JOB"
+        job = session.query(Job).order_by(Job.job_id).filter_by(status="pending").first()
+        
+        if job is None:
+            raise webob.exc.HTTPNotFound()
+
+        raise webob.exc.HTTPTemporaryRedirect(location='/job/'+str(job.job_id))
+
 
     def run_job(self, req, job_id):
-        job = session.query(pbatch.model.Job).get(job_id)
+        job = session.query(Job).get(job_id)
         if job is None:
             raise webob.exc.HTTPNotFound()
 
