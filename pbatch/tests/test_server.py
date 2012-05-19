@@ -1,48 +1,17 @@
-import json
 import re
 
+from nose.plugins.skip import Skip, SkipTest
 import webob
 from webtest import TestApp
 
 from pbatch.daemons import server
 
-def eq(a, b):
-    assert a == b, "Not equal: %s == %s" % (repr(a), repr(b))
-
-def test_json_return():
-    def test(method, args, kwargs, results):
-        meth = server.json_return(method)
-        eq(json.loads(meth(*args, **kwargs).body), results)
-        
-    def test_method1(arg):
-        return "A"
-    yield test, test_method1, [4], {}, "A"
-
-    def test_method2(args={}):
-        return {"A": args}
-    yield test, test_method2, ["B"], {}, {"A": "B"}
-
-def test_json_post():
-    def test(method, args, results):
-        meth = server.json_post(method)
-        eq(json.loads(meth(*args).body), results)
-        
-    def test_method1(req, data):
-        return "A"
-    req = webob.Request({})
-    req.body = '"A"'
-    yield test, test_method1, [req], "A"
-
-    def test_method2(self, req, data):
-        return "A"
-    req = webob.Request({})
-    req.body = '"A"'
-    yield test, test_method2, [{}, req], "A"
+from pbatch.tests.util import eq
 
 class TestClass(object):
     def setUp(self):
-        import sys
-        sys.stderr.write("Setup")
+#        import sys
+#        sys.stderr.write("Setup")
         server.session = server.pbatch.model.connect("sqlite://")
 
     def tearDown(self):
@@ -88,3 +57,34 @@ class TestClass(object):
         eq(res.json['job_id'], 1)
         eq(res.json['status'], "running")
         assert re.match("^[1-9][0-9][0-9][0-9][0-1][0-9][0-3][0-9]T[0-9][0-9][0-9][0-9][0-9][0-9]$", res.json['start_time']), res.json['start_time']
+
+    def test_complete_job_not_found(self):
+        app = TestApp(server.dispatcher)
+        res = app.post_json("/jobs/1234/complete", {"return_code": 4040}, status=404)
+
+    def test_complete_job(self):
+        app = TestApp(server.dispatcher)
+
+        res = app.post_json("/jobs/", {"cli": "ls -l", 'env': ''}, status=200)
+        job_id = res.json['job_id']
+
+        res = app.post_json("/jobs/1/run", {}, status=307)
+
+        res = app.post_json("/jobs/1/complete", {"return_code": 42}, status=307)
+
+        res = app.get("/jobs/1", status=200)
+        eq(res.json['job_id'], 1)
+        eq(res.json['status'], "complete")
+        eq(res.json['return_code'], 42)
+        assert re.match("^[1-9][0-9][0-9][0-9][0-1][0-9][0-3][0-9]T[0-9][0-9][0-9][0-9][0-9][0-9]$", res.json['end_time']), res.json['end_time']
+        assert res.json['end_time'] >= res.json['start_time']
+
+    def test_complete_job_without_running(self):
+        raise SkipTest()
+        app = TestApp(server.dispatcher)
+
+        res = app.post_json("/jobs/", {"cli": "ls -l", 'env': ''}, status=200)
+        job_id = res.json['job_id']
+
+        res = app.post_json("/jobs/1/complete", {"return_code": 42}, status=307)
+        assert False

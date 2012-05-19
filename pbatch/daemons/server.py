@@ -8,54 +8,9 @@ from webob.dec import wsgify
 import routes
 
 import pbatch.model
-
-class Dispatcher(object):
-    def __init__(self):
-        self.map = routes.Mapper()        
-
-    @wsgify
-    def __call__(self, req):
-        results = self.map.routematch(environ=req.environ)
-        #print "RES:", repr(results), dir(results)
-        if not results:
-            return webob.exc.HTTPNotFound()
-        match, route = results
-        req.urlvars = ((), match)
-        kwargs = match.copy()
-        view = kwargs.pop('controller')
-        #print "V:", repr(view), dir(view)
-        method_name = kwargs.pop('method')
-        method = getattr(view(), method_name)
-
-        method_return = method(req, **kwargs)
-        
-        if isinstance(method_return, webob.Response):
-            return method_return
-        else:
-            return webob.Response(method_return)
+from pbatch.daemons.wsgi_util import Dispatcher, json_post, json_return
 
 dispatcher = Dispatcher()
-
-def json_post(method):
-    def wrap(*args, **kwargs):
-        # idx is the position of the data
-        idx = 0
-        if not isinstance(args[0], webob.Request):
-            idx = 1
-
-        json_data = json.loads(args[idx].body)
-        args = args + (json_data,)
-        return method(*args)
-    
-    return json_return(wrap)
-
-def json_return(method):
-    def wrap(*args, **kwargs):
-        resp = webob.Response()
-        resp.body = json.dumps(method(*args, **kwargs))
-        resp.content_type = "application/json"
-        return resp
-    return wrap
 
 class Jobs(object):
     @classmethod
@@ -64,7 +19,7 @@ class Jobs(object):
         with map.submapper(controller=cls, path_prefix="/jobs") as m:
             m.connect('/next', method='next_job')
             m.connect('/{job_id}/run', method='run_job')
-            m.connect('/{job_id}/complete}', method='complete_job')
+            m.connect('/{job_id}/complete', method='complete_job')
             m.connect('/{job_id}', method='get_job', 
                       conditions={"method": ["GET"]})
             m.connect('/', method='new_job', conditions={"method": ["POST"]})
@@ -78,8 +33,8 @@ class Jobs(object):
         return job.toDict()        
         
     @json_post
-    def new_job(self, req, data):
-        job_data = json.loads(req.body)
+    def new_job(self, req, post_data):
+        job_data = post_data
 
         job = pbatch.model.Job() 
         job.status = "pending"
@@ -100,11 +55,11 @@ class Jobs(object):
         return "NEXT JOB"
 
     def run_job(self, req, job_id):
-        print  "RUN JOB:", repr(job_id)
-
         job = session.query(pbatch.model.Job).get(job_id)
         if job is None:
             raise webob.exc.HTTPNotFound()
+
+        #TODO: be sure status is pending.  If not return 403, with json error
 
         job.status="running"
         job.start_time = datetime.datetime.now()
@@ -112,9 +67,20 @@ class Jobs(object):
 
         raise webob.exc.HTTPTemporaryRedirect(location='/job/'+str(job_id))
         
+    @json_post    
+    def complete_job(self, req, job_id, post_data):
+        job = session.query(pbatch.model.Job).get(job_id)
+        if job is None:
+            raise webob.exc.HTTPNotFound()
 
-    def complete_job(self, req, **kwargs):
-        return "COMP JOB"
+        #TODO: be sure status is running.  If not return 403, with json error
+
+        job.status="complete"
+        job.end_time = datetime.datetime.now()
+        job.return_code = post_data['return_code']
+        session.commit()
+
+        raise webob.exc.HTTPTemporaryRedirect(location='/job/'+str(job_id))
 
 Jobs.map(dispatcher.map)
 

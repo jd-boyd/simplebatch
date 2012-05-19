@@ -53,9 +53,9 @@ def init(engine):
     Base.metadata.create_all(engine)
 
 def connect(db_str = 'sqlite:///jobs.db'):
-    import sys
-    sys.stderr.write("Connect: %s\n" % db_str)
-    engine = create_engine(db_str, echo=True)
+    #import sys
+    #sys.stderr.write("Connect: %s\n" % db_str)
+    engine = create_engine(db_str) #, echo=True)
     metadata = MetaData()
     metadata.bind = engine
     Session = sessionmaker(bind=engine)
