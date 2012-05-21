@@ -5,3 +5,4 @@ routes
 webtest
 pystache
 nose
+requests
