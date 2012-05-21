@@ -47,6 +47,9 @@ class Jobs(object):
             if k in job_data:
                 setattr(job, k, job_data[k])
 
+        job.env = json.dumps(job_data['env'])
+        job.args = json.dumps(job_data['args'])
+
         ret = session.add(job)
         session.commit()
 
@@ -96,8 +99,9 @@ Jobs.map(dispatcher.map)
 session = None
 
 def start_wsgiref():
+    global session
     session = pbatch.model.connect()
-    print "PB server."
+    print "PB server:", session
     from wsgiref.util import setup_testing_defaults
     from wsgiref.simple_server import make_server
 
