@@ -42,7 +42,7 @@ def submit():
 
     j.uid = os.getuid()
     j.gid = os.getgid()
-    #j.env = os.environ
+    j.env = dict(os.environ)
 
     j.command = options.COMMAND
     j.args = options.ARGS
