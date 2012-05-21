@@ -19,7 +19,7 @@ class Job(Base):
 
     uid = Column(Integer)
     gid = Column(Integer)
-    user = Column(String)
+
     command = Column(String)
     args = Column(String)
     env = Column(String)
