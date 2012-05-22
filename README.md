@@ -30,8 +30,9 @@ Polls pbatch for a job.  If it is going to run it, it sends a starting call.
 Tools
 ===
 
-psub
+psubmit
 
+later: 
 pstatus
 
 prun
@@ -44,6 +45,4 @@ TODO
 
 Use built in sqlite3 for now.
 
-Pending table
-Running table
-complete table
+
