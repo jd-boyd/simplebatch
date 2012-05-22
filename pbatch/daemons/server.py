@@ -47,8 +47,9 @@ class Jobs(object):
             if k in job_data:
                 setattr(job, k, job_data[k])
 
-        job.env = json.dumps(job_data['env'])
-        job.args = json.dumps(job_data['args'])
+        job.env = json.dumps(job_data.get('env', {}))
+          
+        job.args = json.dumps(job_data.get('args', []))
 
         ret = session.add(job)
         session.commit()
@@ -61,7 +62,7 @@ class Jobs(object):
         if job is None:
             raise webob.exc.HTTPNotFound()
 
-        raise webob.exc.HTTPTemporaryRedirect(location='/job/'+str(job.job_id))
+        raise webob.exc.HTTPTemporaryRedirect(location='/jobs/'+str(job.job_id))
 
 
     def run_job(self, req, job_id):

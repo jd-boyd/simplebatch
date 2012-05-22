@@ -19,11 +19,11 @@ class TestClass(object):
 
     def test_new_job(self):
         app = TestApp(server.dispatcher)
-        res = app.post_json("/jobs/", {"cli": "ls -l", 'env': ''}, status=200)
+        res = app.post_json("/jobs/", {"command": "ls", 'args': ['-l'], 'env': {}}, status=200)
         eq(res.json['job_id'], 1)
         eq(res.json['status'], "pending")
 
-        res = app.post_json("/jobs/", {"cli": "df", 'env': ''}, status=200)
+        res = app.post_json("/jobs/", {"command": "df", "args": [], 'env': {}}, status=200)
         eq(res.json['job_id'], 2)
         eq(res.json['status'], "pending")
 
@@ -105,7 +105,7 @@ class TestClass(object):
         job_id = res.json['job_id']
 
         res = app.get("/jobs/next", {}, status=307)
-        eq(res.headers['location'], 'http://localhost/job/1')
+        eq(res.headers['location'], 'http://localhost/jobs/1')
 
     def test_next_job_fail_no_jobs(self):
         app = TestApp(server.dispatcher)
