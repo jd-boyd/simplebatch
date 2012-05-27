@@ -1,4 +1,5 @@
 import os
+import json
 import subprocess
 import requests
 
@@ -20,13 +21,37 @@ fake_job = {
 }
 
 def run_job(j):
-    full_cmd = [j['command']] + j['args']
+    full_cmd = [j['command']] 
+    if j['args']:
+        full_cmd +=  j['args']
     
-    with open(j['stdin']) as stdin_fh, \
-         open(j['stdout'], "w") as stdout_fh, \
-         open(j['stderr'], "w") as stderr_fh:
-         ret = subprocess.call(full_cmd, stdout=stdout_fh, 
-                               stderr=stderr_fh, stdin=stdin_fh)
+    def setup_file(j, std):
+        modes = {'stdin': "r",
+                 'stdout': "w",
+                 'stderr': "w"}
+        ret = {}
+        if j[std]:
+            fh = open(j[std], modes[std])
+        #BUG: Handle file couldn't be opened
+            ret[std]=fh
+        return ret
+
+    opts = {}
+    opts.update(setup_file(j, 'stdin'))
+    opts.update(setup_file(j, 'stdout'))
+    opts.update(setup_file(j, 'stderr'))
+
+    try:
+        ret = subprocess.call(full_cmd, **opts)
+    finally:
+        if 'stdin' in opts:
+            opts['stdin'].close()
+        if 'stdout' in opts:
+            opts['stdout'].close()
+        if 'stderr' in opts:
+            opts['stderr'].close()
+
+
     return ret
 
 def fork_job(j):
@@ -40,8 +65,10 @@ def fork_job(j):
         print "C:"
         os.setgid(j['gid'])
         os.setuid(j['uid'])
-        for k in j['env']:
-            os.environ[k] = j['env'][k]
+        print "ENV:", repr(j['env'])
+        if j['env']:
+            for k in j['env']:
+                os.environ[k] = j['env'][k]
         run_job(j)
         print 'CD'
 
