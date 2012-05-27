@@ -31,7 +31,10 @@ class Jobs(object):
         if job is None:
             raise webob.exc.HTTPNotFound()
 
-        return job.toDict()        
+        ret_job = job.toDict()        
+        ret_job['env'] = json.loads(job.env)
+        ret_job['args'] = json.loads(job.args)
+        return ret_job
         
     @json_post
     def new_job(self, req, post_data):
@@ -48,7 +51,6 @@ class Jobs(object):
                 setattr(job, k, job_data[k])
 
         job.env = json.dumps(job_data.get('env', {}))
-          
         job.args = json.dumps(job_data.get('args', []))
 
         ret = session.add(job)
