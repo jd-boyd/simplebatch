@@ -21,6 +21,8 @@ def submit_job(job):
 
     r = requests.post('http://localhost:8000/jobs/', data=json.dumps(job_dict),
                       headers={'content-type': 'application/json'})
+
+    print "Queued job:", r.json['job_id']
     
 
 def submit():
@@ -33,7 +35,7 @@ def submit():
     parser.add_argument('ARGS', nargs="+")
     
     options = parser.parse_args(sys.argv[1:])
-    print "O:", options
+    #print "O:", options
     j = Job()
     #print os.environ
     j.stdin = options.STDIN_FILE
