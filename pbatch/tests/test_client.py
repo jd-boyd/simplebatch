@@ -29,12 +29,27 @@ def test_submit_job():
     mock.assert_called_with('http://localhost:8000/jobs/', data=json.dumps(job_dict),
                       headers={'content-type': 'application/json'})
 
-#def test_mark_job_running():
-#    assert False
+def test_mark_job_running():
+    t = TestObj(json={'job_id': 1})
+    mock = MagicMock(return_value = t)
+    with patch('pbatch.client.requests.post', mock):
+        r = pbatch.client.mark_job_running(1)
+        print "R:", r
+        eq(r['job_id'], 1)
+    
+    mock.assert_called_with('http://localhost:8000/jobs/1/running', data=json.dumps({}), headers={'content-type': 'application/json'})
 
-#def test_mark_job_complete():
-    #mark_job_complete(job_id, ret)
-#    assert False
+
+def test_mark_job_complete():
+    t = TestObj(json={'job_id': 1})
+    mock = MagicMock(return_value = t)
+    with patch('pbatch.client.requests.post', mock):
+        r = pbatch.client.mark_job_complete(1, 42)
+        print "R:", r
+        eq(r['job_id'], 1)
+    
+    mock.assert_called_with('http://localhost:8000/jobs/1/complete', data=json.dumps({'return_code': 42}), headers={'content-type': 'application/json'})
+
 
 def test_get_job():
     t = TestObj(json={'job_id': 1})
