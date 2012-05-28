@@ -41,6 +41,8 @@ def run_job(j):
     opts.update(setup_file(j, 'stdout'))
     opts.update(setup_file(j, 'stderr'))
 
+
+    pbatch.client.mark_job_running(j.job_id)
     ret = None
     try:
         ret = subprocess.call(full_cmd, **opts)
