@@ -14,16 +14,10 @@ def submit_job(job):
     r = requests.post('http://localhost:8000/jobs/', data=json.dumps(job_dict),
                       headers={'content-type': 'application/json'})
 
-    return r
+    return r.json
 
-def mark_job_running(job):
-    job_dict = job.toDict()
-    drop_keys = ['job_id', 'status', 'end_time', 'start_time']
-    for drop in drop_keys:
-        del job_dict[drop]
-    #print "DICT:", json.dumps(job_dict, indent=2)
-
-    r = requests.post('http://localhost:8000/jobs/', data=json.dumps(job_dict),
+def mark_job_running(job_id):
+    r = requests.post('http://localhost:8000/jobs/%d/running' % job_id, data=json.dumps({}),
                       headers={'content-type': 'application/json'})
 
     return r
