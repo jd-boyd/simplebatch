@@ -8,22 +8,10 @@ import json
 import requests
 
 from pbatch.model import Job
+import pbatch.client
 
 def run():
     print "prun"
-
-def submit_job(job):
-    job_dict = job.toDict()
-    drop_keys = ['job_id', 'status', 'end_time', 'start_time']
-    for drop in drop_keys:
-        del job_dict[drop]
-    #print "DICT:", json.dumps(job_dict, indent=2)
-
-    r = requests.post('http://localhost:8000/jobs/', data=json.dumps(job_dict),
-                      headers={'content-type': 'application/json'})
-
-    print "Queued job:", r.json['job_id']
-    
 
 def submit():
     parser = argparse.ArgumentParser(description='Submit a job to be run later')
@@ -49,4 +37,5 @@ def submit():
     j.command = options.COMMAND
     j.args = options.ARGS
 
-    submit_job(j)
+    r = pbatch.client.submit_job(j)
+    print "Queued job:", r.json['job_id']

@@ -1,7 +1,7 @@
 import os
-import json
 import subprocess
-import requests
+
+import pbatch.client
 
 # Get job
 # Fork
@@ -22,8 +22,8 @@ fake_job = {
 
 def run_job(j):
     full_cmd = [j['command']] 
-    if j['args']:
-        full_cmd +=  j['args']
+    if j.args:
+        full_cmd +=  j.args
     
     def setup_file(j, std):
         modes = {'stdin': "r",
@@ -41,6 +41,7 @@ def run_job(j):
     opts.update(setup_file(j, 'stdout'))
     opts.update(setup_file(j, 'stderr'))
 
+    ret = None
     try:
         ret = subprocess.call(full_cmd, **opts)
     finally:
@@ -51,6 +52,7 @@ def run_job(j):
         if 'stderr' in opts:
             opts['stderr'].close()
 
+    pbatch.client.mark_job_complete(j.job_id, ret)
 
     return ret
 
@@ -63,18 +65,18 @@ def fork_job(j):
         print 'PD'
     else:
         print "C:"
-        os.setgid(j['gid'])
-        os.setuid(j['uid'])
-        print "ENV:", repr(j['env'])
-        if j['env']:
-            for k in j['env']:
-                os.environ[k] = j['env'][k]
+        os.setgid(j.gid)
+        os.setuid(j.uid)
+        print "ENV:", repr(j.env)
+        if j.env:
+            for k in j.env:
+                os.environ[k] = j.env[k]
         run_job(j)
         print 'CD'
 
 def start():
-    r = requests.get("http://localhost:8000/jobs/next")
-    fork_job(r.json)
+    job = pbatch.client.get_next_job()
+    fork_job(job)
 
 if __name__=="__main__":
     start()

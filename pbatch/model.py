@@ -32,6 +32,12 @@ class Job(Base):
     end_time = Column(DateTime) # set when complete
     return_code = Column(Integer) # set when complete
 
+    def __init__(self, job=None):
+        """job is a dict of values to insert."""
+        if job:
+            for k,v in job.iteritems():
+                setattr(self, k, v)
+        
     def __getitem__(self, k):
         return getattr(self, k)
 
