@@ -66,8 +66,8 @@ class Jobs(object):
 
         raise webob.exc.HTTPTemporaryRedirect(location='/jobs/'+str(job.job_id))
 
-
-    def run_job(self, req, job_id):
+    @json_post
+    def run_job(self, req, job_id, post_data):
         job = session.query(Job).get(job_id)
         if job is None:
             raise webob.exc.HTTPNotFound()
@@ -83,6 +83,7 @@ class Jobs(object):
         
     @json_post    
     def complete_job(self, req, job_id, post_data):
+
         job = session.query(pbatch.model.Job).get(job_id)
         if job is None:
             raise webob.exc.HTTPNotFound()
