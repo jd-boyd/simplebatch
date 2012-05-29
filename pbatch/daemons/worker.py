@@ -41,9 +41,7 @@ def run_job(j):
     opts.update(setup_file(j, 'stdout'))
     opts.update(setup_file(j, 'stderr'))
 
-
     pbatch.client.mark_job_running(j.job_id)
-    ret = None
     try:
         ret = subprocess.call(full_cmd, **opts)
     finally:
@@ -69,7 +67,7 @@ def fork_job(j):
         print "C:"
         os.setgid(j.gid)
         os.setuid(j.uid)
-        print "ENV:", repr(j.env)
+        #print "ENV:", repr(j.env)
         if j.env:
             for k in j.env:
                 os.environ[k] = j.env[k]
@@ -78,7 +76,11 @@ def fork_job(j):
 
 def start():
     job = pbatch.client.get_next_job()
-    fork_job(job)
+    if job:
+        print "Running job:", job.job_id
+        fork_job(job)
+    else:
+        print "Got no job."
 
 if __name__=="__main__":
     start()
