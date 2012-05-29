@@ -17,7 +17,7 @@ def submit_job(job):
     return r.json
 
 def mark_job_running(job_id):
-    r = requests.post('http://localhost:8000/jobs/%d/running' % job_id, data=json.dumps({}),
+    r = requests.post('http://localhost:8000/jobs/%d/run' % job_id, data=json.dumps({}),
                       headers={'content-type': 'application/json'})
 
     return r.json
