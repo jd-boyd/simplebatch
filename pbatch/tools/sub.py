@@ -38,4 +38,4 @@ def submit():
     j.args = options.ARGS
 
     r = pbatch.client.submit_job(j)
-    print "Queued job:", r.json['job_id']
+    print "Queued job:", r['job_id']
