@@ -2,6 +2,7 @@ import argparse
 import json
 import os
 import datetime
+import logging
 
 import webob
 from webob.dec import wsgify
@@ -12,6 +13,8 @@ from pbatch.model import Job
 from pbatch.daemons.wsgi_util import Dispatcher, json_post, json_return
 
 dispatcher = Dispatcher()
+
+log = logging.getLogger(__name__)
 
 class Jobs(object):
     @classmethod
@@ -59,7 +62,7 @@ class Jobs(object):
         return job.toDict()
 
     def next_job(self, req):
-        job = session.query(Job).order_by(Job.job_id).filter_by(status="pending").first()
+        job = session.query(Job.job_id, Job.status).order_by(Job.job_id).filter_by(status="pending").first()
         
         if job is None:
             raise webob.exc.HTTPNotFound()
@@ -71,30 +74,46 @@ class Jobs(object):
         job = session.query(Job).get(job_id)
         if job is None:
             raise webob.exc.HTTPNotFound()
-
-        if not job.status == "pending":
-            raise webob.exc.HTTPForbidden("Can only run pending jobs.")
         
-        job.status="running"
-        job.start_time = datetime.datetime.now()
+        filter_d = {"job_id": job_id,
+                    "status": "pending"}
+        
+        update_fields = {Job.status: "running",
+                         Job.start_time: datetime.datetime.now()
+                         }
+        ret = session.query(Job).filter_by(**filter_d).update(update_fields)
         session.commit()
+        print "RET:", repr(ret)
+
+        if ret==0:
+            # Since we established that the job existed, if no rows were
+            # updated, the job must not have been in the pending state.
+            raise webob.exc.HTTPForbidden("Can only run pending jobs.")
 
         raise webob.exc.HTTPTemporaryRedirect(location='/job/'+str(job_id))
         
     @json_post    
     def complete_job(self, req, job_id, post_data):
-
-        job = session.query(pbatch.model.Job).get(job_id)
+        job = session.query(Job).get(job_id)
         if job is None:
             raise webob.exc.HTTPNotFound()
-
-        if not job.status == "running":
-            raise webob.exc.HTTPForbidden("Can only complete runnings jobs.")
-
-        job.status="complete"
-        job.end_time = datetime.datetime.now()
-        job.return_code = post_data['return_code']
+        
+        filter_d = {"job_id": job_id,
+                    "status": "running"}
+        
+        update_fields = {Job.status: "complete",
+                         Job.end_time: datetime.datetime.now(),
+                         Job.return_code: post_data['return_code']
+                         }
+        ret = session.query(Job).filter_by(**filter_d).update(update_fields)
         session.commit()
+        print "RET:", repr(ret)
+
+        if ret==0:
+            # Since we established that the job existed, if no rows were
+            # updated, the job must not have been in the pending state.
+            raise webob.exc.HTTPForbidden("Can only run pending jobs.")
+
 
         raise webob.exc.HTTPTemporaryRedirect(location='/job/'+str(job_id))
 
