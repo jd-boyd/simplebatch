@@ -36,7 +36,9 @@ def get_job(job_id):
 
 def get_next_job():
     r = requests.get("http://localhost:8000/jobs/next")
-    j = Job(r.json)
-    return j
+    if r.json:
+        return Job(r.json)
+    else:
+        return None
 
     
