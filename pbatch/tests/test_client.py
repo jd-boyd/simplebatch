@@ -37,7 +37,7 @@ def test_mark_job_running():
         print "R:", r
         eq(r['job_id'], 1)
     
-    mock.assert_called_with('http://localhost:8000/jobs/1/running', data=json.dumps({}), headers={'content-type': 'application/json'})
+    mock.assert_called_with('http://localhost:8000/jobs/1/run', data=json.dumps({}), headers={'content-type': 'application/json'})
 
 
 def test_mark_job_complete():
