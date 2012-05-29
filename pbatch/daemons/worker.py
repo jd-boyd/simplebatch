@@ -1,5 +1,8 @@
 import os
+import sys
 import subprocess
+import time
+import argparse
 
 import pbatch.client
 
@@ -74,13 +77,33 @@ def fork_job(j):
         run_job(j)
         print 'CD'
 
-def start():
-    job = pbatch.client.get_next_job()
-    if job:
-        print "Running job:", job.job_id
-        fork_job(job)
-    else:
-        print "Got no job."
 
+
+def main(args):
+    parser = argparse.ArgumentParser(description='Run jobs int the queue')
+
+    parser.add_argument('--single', action="store_true", default=False)
+    
+    options = parser.parse_args(args)
+
+    loop = True
+
+    while loop:
+        job = pbatch.client.get_next_job()
+        if job:
+            print "Running job:", job.job_id
+            fork_job(job)
+        else:
+            print "Got no job."
+            time.sleep(10)
+
+        if options.single:
+            loop=False
+
+def start():
+    """Entry point.  It just calls main with the CLI args to make it 
+    easier to test."""
+    main(sys.argv[1:])
+    
 if __name__=="__main__":
     start()
