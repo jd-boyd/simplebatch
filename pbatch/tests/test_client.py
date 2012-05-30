@@ -79,3 +79,12 @@ def test_kill_job():
     
     mock.assert_called_with('http://localhost:8000/jobs/1/kill', data=json.dumps({}), headers={'content-type': 'application/json'})
 
+def test_get_all_jobs():
+    t = TestObj(json=[{'job_id': 1}])
+    mock = MagicMock(return_value = t)
+    with patch('pbatch.client.requests.get', mock):
+        r = pbatch.client.get_all_jobs()
+        print "R:", r
+        eq(len(r), 1)
+    
+    mock.assert_called_with('http://localhost:8000/jobs/')

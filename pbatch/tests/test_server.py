@@ -130,3 +130,14 @@ class TestClass(object):
         eq(res.json['job_id'], 1)
         eq(res.json['status'], "killed")
 
+    def test_all_jobs(self):
+        app = TestApp(server.dispatcher)
+                
+        res = app.post_json("/jobs/", {"cli": "ls -l", 'env': ''}, status=200)
+        job_id1 = res.json['job_id']
+                
+        res = app.post_json("/jobs/", {"cli": "df -h", 'env': ''}, status=200)
+        job_id2 = res.json['job_id']
+
+        res = app.get("/jobs/", status=200)
+        eq(len(res.json), 2)

@@ -48,4 +48,8 @@ def get_next_job():
     else:
         return None
 
+def get_all_jobs():
+    r = requests.get("http://localhost:8000/jobs/")
+    return r.json
+
     

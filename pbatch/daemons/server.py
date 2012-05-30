@@ -10,6 +10,8 @@ import routes
 
 import pbatch.model
 from pbatch.model import Job
+from sqlalchemy import or_
+
 from pbatch.daemons.wsgi_util import Dispatcher, json_post, json_return
 
 dispatcher = Dispatcher()
@@ -28,6 +30,7 @@ class Jobs(object):
             m.connect('/{job_id}', method='get_job', 
                       conditions={"method": ["GET"]})
             m.connect('/', method='new_job', conditions={"method": ["POST"]})
+            m.connect('/', method='all_jobs', conditions={"method": ["GET"]})
 
     @json_return
     def get_job(self, req, job_id):
@@ -140,6 +143,13 @@ class Jobs(object):
 
         raise webob.exc.HTTPTemporaryRedirect(location='/job/'+str(job_id))
 
+    @json_return
+    def all_jobs(self, req):
+        jobs = []
+        ret = session.query(Job).order_by(Job.job_id)
+        for job in ret:
+            jobs.append( job.toDict() )
+        return jobs
 
 Jobs.map(dispatcher.map)
 
