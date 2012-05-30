@@ -11,11 +11,12 @@ pbatch
 
 REST server keeps track of jobs.
 Sooner:
-/jobs           POST - create a new job
+/jobs           POST - create a new job, GET - get all jobs
 /jobs/id        
 /jobs/next
-/jobs/run       POST, mark a job as runnign
-/jobs/complete  POST, mark a job as done
+/jobs/id/run       POST, mark a job as running
+/jobs/id/complete  POST, mark a job as done
+/jobs/id/kill      POST, mark a job as killed
 
 Later:
 /jobs/pending   GET the collection
@@ -32,12 +33,13 @@ Tools
 
 psubmit
 
+pkill
+
 later: 
 pstatus
 
 prun
 
-pkill
 
 
 TODO
@@ -45,4 +47,4 @@ TODO
 
 Use built in sqlite3 for now.
 
-
+Add actuall integration tests between client and server.
