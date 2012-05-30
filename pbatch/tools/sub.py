@@ -13,7 +13,7 @@ import pbatch.client
 def run():
     print "prun"
 
-def submit():
+def submit_main(args):
     parser = argparse.ArgumentParser(description='Submit a job to be run later')
 
     parser.add_argument('--stdin', action="store", dest="STDIN_FILE", type=str)
@@ -22,7 +22,7 @@ def submit():
     parser.add_argument('COMMAND')
     parser.add_argument('ARGS', nargs="+")
     
-    options = parser.parse_args(sys.argv[1:])
+    options = parser.parse_args(args)
     #print "O:", options
     j = Job()
     #print os.environ
@@ -39,3 +39,6 @@ def submit():
 
     r = pbatch.client.submit_job(j)
     print "Queued job:", r['job_id']
+
+def submit():
+    submit_main(sys.argv[1:])
