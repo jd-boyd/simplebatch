@@ -1,9 +1,4 @@
-sqlalchemy
-argparse
-WebOb
-routes
 webtest
-pystache
+#pystache
 nose
-requests
 mock
