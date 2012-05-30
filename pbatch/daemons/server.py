@@ -23,6 +23,7 @@ class Jobs(object):
         with map.submapper(controller=cls, path_prefix="/jobs") as m:
             m.connect('/next', method='next_job')
             m.connect('/{job_id}/run', method='run_job')
+            m.connect('/{job_id}/kill', method='kill_job')
             m.connect('/{job_id}/complete', method='complete_job')
             m.connect('/{job_id}', method='get_job', 
                       conditions={"method": ["GET"]})
@@ -114,8 +115,31 @@ class Jobs(object):
             # updated, the job must not have been in the pending state.
             raise webob.exc.HTTPForbidden("Can only run pending jobs.")
 
+        raise webob.exc.HTTPTemporaryRedirect(location='/job/'+str(job_id))
+
+    @json_post
+    def kill_job(self, req, job_id, post_data):
+        print "KILL JOB"
+        job = session.query(Job).get(job_id)
+        if job is None:
+            print "Reject"
+            raise webob.exc.HTTPNotFound()
+        
+        filter_d = {"job_id": job_id,
+                    "status": "pending"}
+        
+        update_fields = {Job.status: "killed"}
+        ret = session.query(Job).filter_by(**filter_d).update(update_fields)
+        session.commit()
+        print "RET:", repr(ret)
+
+        if ret==0:
+            # Since we established that the job existed, if no rows were
+            # updated, the job must not have been in the pending state.
+            raise webob.exc.HTTPForbidden("Can only delete pending jobs.")
 
         raise webob.exc.HTTPTemporaryRedirect(location='/job/'+str(job_id))
+
 
 Jobs.map(dispatcher.map)
 

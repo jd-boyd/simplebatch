@@ -29,6 +29,13 @@ def mark_job_complete(job_id, ret):
 
     return r.json
 
+
+def kill_job(job_id):
+    r = requests.post("http://localhost:8000/jobs/%d/kill" % job_id,
+                      headers = {'content-type': 'application/json'},
+                      data=json.dumps({}))
+    return r.json
+
 def get_job(job_id):
     r = requests.get("http://localhost:8000/jobs/" + str(job_id))
     j = Job(r.json)

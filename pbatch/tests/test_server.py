@@ -118,4 +118,15 @@ class TestClass(object):
         res = app.post_json("/jobs/1/run", {}, status=307)
         res = app.get("/jobs/next", {}, status=404)
 
-        
+    def test_kill_job(self):
+        app = TestApp(server.dispatcher)
+                
+        res = app.post_json("/jobs/", {"cli": "ls -l", 'env': ''}, status=200)
+        job_id = res.json['job_id']
+
+        res = app.post_json("/jobs/1/kill", {}, status=307)
+
+        res = app.get("/jobs/1", status=200)
+        eq(res.json['job_id'], 1)
+        eq(res.json['status'], "killed")
+

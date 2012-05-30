@@ -39,7 +39,6 @@ def test_mark_job_running():
     
     mock.assert_called_with('http://localhost:8000/jobs/1/run', data=json.dumps({}), headers={'content-type': 'application/json'})
 
-
 def test_mark_job_complete():
     t = TestObj(json={'job_id': 1})
     mock = MagicMock(return_value = t)
@@ -49,7 +48,6 @@ def test_mark_job_complete():
         eq(r['job_id'], 1)
     
     mock.assert_called_with('http://localhost:8000/jobs/1/complete', data=json.dumps({'return_code': 42}), headers={'content-type': 'application/json'})
-
 
 def test_get_job():
     t = TestObj(json={'job_id': 1})
@@ -70,3 +68,14 @@ def test_get_next_job():
         eq(r['job_id'], 1)
     
     mock.assert_called_with('http://localhost:8000/jobs/next')
+
+def test_kill_job():
+    t = TestObj(json={'job_id': 1})
+    mock = MagicMock(return_value = t)
+    with patch('pbatch.client.requests.post', mock):
+        r = pbatch.client.kill_job(1)
+        print "R:", r
+        eq(r['job_id'], 1)
+    
+    mock.assert_called_with('http://localhost:8000/jobs/1/kill', data=json.dumps({}), headers={'content-type': 'application/json'})
+
