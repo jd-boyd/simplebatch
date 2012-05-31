@@ -1,4 +1,0 @@
-webtest
-#pystache
-nose
-mock

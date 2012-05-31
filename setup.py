@@ -7,12 +7,17 @@ setup(name='pbatch',
       description='Simple Batch Processing',
       author='Joshua D. Boyd',
       author_email='jdboyd@jdboyd.net',
+      setup_requires=['nose'],
       install_requires=['sqlalchemy',
                         'argparse',
                         'WebOb',
                         'routes',
                         'requests'
                         ],
+      tests_require=[
+          'webtest',
+          'mock'
+      ],
       packages = find_packages(),
       entry_points = {'console_scripts': ['prun = pbatch.tools.sub:run',
                                           'psubmit = pbatch.tools.sub:submit',
