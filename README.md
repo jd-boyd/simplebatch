@@ -48,3 +48,7 @@ TODO
 Use built in sqlite3 for now.
 
 Add actuall integration tests between client and server.
+
+Add a -p flag to patchd to put pid in a file.
+
+Supply initd, upstart, and SMF files.
