@@ -25,5 +25,6 @@ setup(name='pbatch',
                                           'pstatus = pbatch.tools.status:status',
                                           'pbatchd = pbatch.daemons.server:start',                                         
                                           'pbatch_worker = pbatch.daemons.worker:start',                                         
+                                          'pbatch_manager = pbatch.daemons.manager:start',                                         
                                           ]}
      )

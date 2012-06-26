@@ -6,7 +6,7 @@ Simple Batch Processing
 Daemons
 ===
 
-pbatch
+pbatchd
 ---
 
 REST server keeps track of jobs.
@@ -27,6 +27,11 @@ pbatch_worker
 ---
 
 Polls pbatch for a job.  If it is going to run it, it sends a starting call.
+
+pbatch_manager
+---
+
+Manages a pool of workers.  This will be rolled into pbatchd eventually, but for now it is seperate to get the kinks worked out.
 
 Tools
 ===
