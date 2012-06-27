@@ -172,6 +172,8 @@ def start():
     manager_main = simplebatch.daemons.manager.main
     thread = threading.Thread(target=manager_main, args=([],))
 
+    print "Using", simplebatch.daemons.manager.WORKER_CNT, "workers"
+
     thread.start()
     try:
         start_wsgiref()
