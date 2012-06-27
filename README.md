@@ -1,4 +1,4 @@
-pbatch
+simplebatch
 ===
 
 Simple Batch Processing
@@ -6,7 +6,7 @@ Simple Batch Processing
 Daemons
 ===
 
-pbatchd
+batchd
 ---
 
 REST server keeps track of jobs.
@@ -23,27 +23,28 @@ Later:
 /jobs/running   
 /jobs/completed 
 
-pbatch_worker
+batch_worker
 ---
 
-Polls pbatch for a job.  If it is going to run it, it sends a starting call.
+Polls batchd for a job.  If it is going to run it, it sends a starting call.
 
-pbatch_manager
+batch_manager
 ---
 
-Manages a pool of workers.  This will be rolled into pbatchd eventually, but for now it is seperate to get the kinks worked out.
+Manages a pool of workers.  This will be rolled into batchd eventually,
+but for now it is seperate to get the kinks worked out. 
 
 Tools
 ===
 
-psubmit
+bsubmit
 
-pkill
+bkill
 
 later: 
-pstatus
+bstatus
 
-prun
+brun
 
 
 
@@ -57,3 +58,9 @@ Add actuall integration tests between client and server.
 Add a -p flag to patchd to put pid in a file.
 
 Supply initd, upstart, and SMF files.
+
+Add a workers flag instead of just detecting.
+
+Add slave mode to batchd.
+
+Add any arguments to batchd
