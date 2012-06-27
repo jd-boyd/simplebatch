@@ -4,15 +4,15 @@ from nose.plugins.skip import Skip, SkipTest
 import webob
 from webtest import TestApp
 
-from pbatch.daemons import server
+from simplebatch.daemons import server
 
-from pbatch.tests.util import eq
+from simplebatch.tests.util import eq
 
 class TestClass(object):
     def setUp(self):
 #        import sys
 #        sys.stderr.write("Setup")
-        server.session = server.pbatch.model.connect("sqlite://")
+        server.session = server.simplebatch.model.connect("sqlite://")
 
     def tearDown(self):
         server.session = None

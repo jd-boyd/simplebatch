@@ -1,8 +1,10 @@
+from __future__ import absolute_import
+
 import json
 
 import requests
 
-from pbatch.model import Job
+from simplebatch.model import Job
 
 def submit_job(job):
     job_dict = job.toDict()

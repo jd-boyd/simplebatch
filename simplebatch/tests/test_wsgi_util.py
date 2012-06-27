@@ -3,9 +3,9 @@ import json
 import webob
 from webtest import TestApp
 
-from pbatch.tests.util import eq
+from simplebatch.tests.util import eq
 
-from pbatch.daemons import wsgi_util
+from simplebatch.daemons import wsgi_util
 
 def test_json_return():
     def test(method, args, kwargs, results):

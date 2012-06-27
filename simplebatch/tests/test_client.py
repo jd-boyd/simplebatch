@@ -3,9 +3,9 @@ import json
 from requests import Request
 from mock import patch, MagicMock
 
-import pbatch.client
-from pbatch.model import Job
-from pbatch.tests.util import eq
+import simplebatch.client
+from simplebatch.model import Job
+from simplebatch.tests.util import eq
 
 class TestObj(object):
     def __init__(self, **kwargs):
@@ -16,8 +16,8 @@ def test_submit_job():
     j = Job()
     t = TestObj(json={'job_id': 1})
     mock = MagicMock(return_value = t)
-    with patch('pbatch.client.requests.post', mock):
-        r = pbatch.client.submit_job(j)
+    with patch('simplebatch.client.requests.post', mock):
+        r = simplebatch.client.submit_job(j)
         print "R:", r
         eq(r['job_id'], 1)
 
@@ -32,8 +32,8 @@ def test_submit_job():
 def test_mark_job_running():
     t = TestObj(json={'job_id': 1})
     mock = MagicMock(return_value = t)
-    with patch('pbatch.client.requests.post', mock):
-        r = pbatch.client.mark_job_running(1)
+    with patch('simplebatch.client.requests.post', mock):
+        r = simplebatch.client.mark_job_running(1)
         print "R:", r
         eq(r['job_id'], 1)
     
@@ -42,8 +42,8 @@ def test_mark_job_running():
 def test_mark_job_complete():
     t = TestObj(json={'job_id': 1})
     mock = MagicMock(return_value = t)
-    with patch('pbatch.client.requests.post', mock):
-        r = pbatch.client.mark_job_complete(1, 42)
+    with patch('simplebatch.client.requests.post', mock):
+        r = simplebatch.client.mark_job_complete(1, 42)
         print "R:", r
         eq(r['job_id'], 1)
     
@@ -52,8 +52,8 @@ def test_mark_job_complete():
 def test_get_job():
     t = TestObj(json={'job_id': 1})
     mock = MagicMock(return_value = t)
-    with patch('pbatch.client.requests.get', mock):
-        r = pbatch.client.get_job(1)
+    with patch('simplebatch.client.requests.get', mock):
+        r = simplebatch.client.get_job(1)
         print "R:", r
         eq(r['job_id'], 1)
     
@@ -62,8 +62,8 @@ def test_get_job():
 def test_get_next_job():
     t = TestObj(json={'job_id': 1})
     mock = MagicMock(return_value = t)
-    with patch('pbatch.client.requests.get', mock):
-        r = pbatch.client.get_next_job()
+    with patch('simplebatch.client.requests.get', mock):
+        r = simplebatch.client.get_next_job()
         print "R:", r
         eq(r['job_id'], 1)
     
@@ -72,8 +72,8 @@ def test_get_next_job():
 def test_kill_job():
     t = TestObj(json={'job_id': 1})
     mock = MagicMock(return_value = t)
-    with patch('pbatch.client.requests.post', mock):
-        r = pbatch.client.kill_job(1)
+    with patch('simplebatch.client.requests.post', mock):
+        r = simplebatch.client.kill_job(1)
         print "R:", r
         eq(r['job_id'], 1)
     
@@ -82,8 +82,8 @@ def test_kill_job():
 def test_get_all_jobs():
     t = TestObj(json=[{'job_id': 1}])
     mock = MagicMock(return_value = t)
-    with patch('pbatch.client.requests.get', mock):
-        r = pbatch.client.get_all_jobs()
+    with patch('simplebatch.client.requests.get', mock):
+        r = simplebatch.client.get_all_jobs()
         print "R:", r
         eq(len(r), 1)
     

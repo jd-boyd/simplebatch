@@ -7,8 +7,8 @@ import json
 
 import requests
 
-from pbatch.model import Job
-import pbatch.client
+from simplebatch.model import Job
+import simplebatch.client
 
 def run():
     print "prun"
@@ -37,7 +37,7 @@ def submit_main(args):
     j.command = options.COMMAND
     j.args = options.ARGS
 
-    r = pbatch.client.submit_job(j)
+    r = simplebatch.client.submit_job(j)
     print "Queued job:", r['job_id']
 
 def submit():

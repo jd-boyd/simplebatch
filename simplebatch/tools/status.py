@@ -1,7 +1,7 @@
 import argparse
 import sys
 
-import pbatch.client
+import simplebatch.client
 
 def status_main(args):
     parser = argparse.ArgumentParser(description='Show the status of jobs in the system.')
@@ -21,7 +21,7 @@ def status_main(args):
 
     print options
 
-    all_jobs = pbatch.client.get_all_jobs()
+    all_jobs = simplebatch.client.get_all_jobs()
 
     def filt(job):
         if options.all:
@@ -49,4 +49,4 @@ def status():
 
 def kill():
     #TODO: switch to proper argparse
-    pbatch.client.kill_job(int(sys.argv[1]))
+    simplebatch.client.kill_job(int(sys.argv[1]))

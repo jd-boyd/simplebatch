@@ -4,7 +4,7 @@ import subprocess
 import time
 import argparse
 
-import pbatch.client
+import simplebatch.client
 
 # Get job
 # Fork
@@ -44,7 +44,7 @@ def run_job(j):
     opts.update(setup_file(j, 'stdout'))
     opts.update(setup_file(j, 'stderr'))
 
-    pbatch.client.mark_job_running(j.job_id)
+    simplebatch.client.mark_job_running(j.job_id)
     try:
         ret = subprocess.call(full_cmd, **opts)
     finally:
@@ -55,7 +55,7 @@ def run_job(j):
         if 'stderr' in opts:
             opts['stderr'].close()
 
-    pbatch.client.mark_job_complete(j.job_id, ret)
+    simplebatch.client.mark_job_complete(j.job_id, ret)
 
     return ret
 
@@ -89,7 +89,7 @@ def main(args):
     loop = True
 
     while loop:
-        job = pbatch.client.get_next_job()
+        job = simplebatch.client.get_next_job()
         if job:
             print "Running job:", job.job_id
             fork_job(job)

@@ -8,11 +8,11 @@ import webob
 from webob.dec import wsgify
 import routes
 
-import pbatch.model
-from pbatch.model import Job
+import simplebatch.model
+from simplebatch.model import Job
 from sqlalchemy import or_
 
-from pbatch.daemons.wsgi_util import Dispatcher, json_post, json_return
+from simplebatch.daemons.wsgi_util import Dispatcher, json_post, json_return
 
 dispatcher = Dispatcher()
 
@@ -157,7 +157,7 @@ session = None
 
 def start_wsgiref():
     global session
-    session = pbatch.model.connect()
+    session = simplebatch.model.connect()
     print "PB server:", session
     from wsgiref.util import setup_testing_defaults
     from wsgiref.simple_server import make_server
@@ -165,5 +165,7 @@ def start_wsgiref():
     httpd = make_server('', 8000, dispatcher)
     print "Serving on port 8000..."
     httpd.serve_forever()
+
+def start():
 
 start = start_wsgiref
