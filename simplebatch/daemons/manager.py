@@ -5,20 +5,6 @@ import time
 
 log = logging.getLogger(__name__)
 
-WORKER_CNT = detectCPUs()
-WORKER = "/home/jdboyd/.virtualenvs/simplebatch/bin/batch_worker"
-stopping = False
-workers = []
-
-def make_worker():
-    pid = os.fork()
-    if pid == 0:
-        print "This is the child"
-        os.execv(WORKER, [WORKER])
-    else:
-        return pid
-
-
 # lifted from: http://codeliberates.blogspot.com/2008/05/detecting-cpuscores-in-python.html
 def detectCPUs():
     """
@@ -40,12 +26,29 @@ def detectCPUs():
                 return ncpus
     return 1 # Default
 
+
+WORKER_CNT = detectCPUs()
+WORKER = "/home/jdboyd/.virtualenvs/simplebatch/bin/batch_worker"
+stopping = False
+workers = []
+
+def make_worker():
+    pid = os.fork()
+    if pid == 0:
+        print "This is the child"
+        os.execv(WORKER, [WORKER])
+    else:
+        return pid
+
+
 def main(args):
     parser = argparse.ArgumentParser(description='Run jobs int the queue')
 
     #parser.add_argument('--single', action="store_true", default=False)
     
     options = parser.parse_args(args)
+
+    print "Manager"
 
     while not stopping:
         if len(workers) != WORKER_CNT:

@@ -3,6 +3,7 @@ import json
 import os
 import datetime
 import logging
+import threading
 
 import webob
 from webob.dec import wsgify
@@ -167,5 +168,15 @@ def start_wsgiref():
     httpd.serve_forever()
 
 def start():
+    import simplebatch.daemons.manager
+    manager_main = simplebatch.daemons.manager.main
+    thread = threading.Thread(target=manager_main, args=([],))
 
-start = start_wsgiref
+    thread.start()
+    try:
+        start_wsgiref()
+    except KeyboardInterrupt:
+        simplebatch.daemons.manager.stopping = True
+        thread.join()
+
+#start = start_wsgiref
