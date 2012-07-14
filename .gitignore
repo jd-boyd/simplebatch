@@ -30,3 +30,5 @@ pip-log.txt
 .mr.developer.cfg
 
 *.db
+
+nosetests.xml
